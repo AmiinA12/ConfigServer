@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: Gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: capteurs-service
+          uri: lb://capteurs-service
+          predicates:
+            - Path=/capteurs/**
+          filters:
+            - RewritePath=/capteurs/(?<path>.*), /${path}
+
+        - id: irrigation-service
+          uri: lb://irrigation-service
+          predicates:
+            - Path=/irrigation/**
+          filters:
+            - RewritePath=/irrigation/(?<path>.*), /${path}
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:4040/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway
