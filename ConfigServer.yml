@@ -1,4 +1,3 @@
-
 spring:
   application:
     name: ConfigServer
@@ -7,7 +6,7 @@ spring:
       server:
         git:
           uri: https://github.com/AmiinA12/ConfigServer.git
-          default-label: main
+          default-label: main  # <-- ici on précise main au lieu de master
 
 server:
   port: 9999
