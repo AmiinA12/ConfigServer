@@ -1,12 +1,17 @@
 spring:
   application:
     name: ConfigServer
+
+  profiles:
+    active: git   # 🔥 TRÈS IMPORTANT (désactive Native)
+
   cloud:
     config:
       server:
         git:
           uri: https://github.com/AmiinA12/ConfigServer.git
-          default-label: main  # <-- ici on précise main au lieu de master
+          default-label: main
+          clone-on-start: true
 
 server:
   port: 9999
