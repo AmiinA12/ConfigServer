@@ -3,18 +3,6 @@ spring:
     name: Getway
   config:
     import: "configserver:http://localhost:9999"
-
-server:
-  port: 5000
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:9090/eureka
-
-spring:
   cloud:
     gateway:
       routes:
@@ -24,6 +12,16 @@ spring:
             - Path=/projects/**
           filters:
             - RewritePath=/projects/(?<lien>.*), /${lien}
+
+server:
+  port: 5000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:4040/eureka
 
 management:
   endpoints:
