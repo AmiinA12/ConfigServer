@@ -10,15 +10,22 @@ spring:
         - id: Capteurs
           uri: lb://CAPTEURS-SERVICE
           predicates:
-            - Path=/capteurs/**  
+            - Path=/capteurs/**
           filters:
-            - RewritePath=/capteurs/(?<segment>.*), /${segment}
+            - name: RewritePath
+              args:
+                regexp: /capteurs/(?<segment>.*)
+                replacement: /${segment}
+
         - id: Irrigation
           uri: lb://IRRIGATION-SERVICE
           predicates:
-            - Path=/irrigation/**  
+            - Path=/irrigation/**
           filters:
-            - RewritePath=/irrigation/(?<segment>.*), /${segment}
+            - name: RewritePath
+              args:
+                regexp: /irrigation/(?<segment>.*)
+                replacement: /${segment}
 
 eureka:
   client:
