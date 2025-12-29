@@ -32,7 +32,8 @@ management:
   endpoints:
     web:
       exposure:
-        include: gateway
-  endpoint:
+        include: Gateway
+   endpoint:
     gateway:
+      enabled: true
       access: read-only
