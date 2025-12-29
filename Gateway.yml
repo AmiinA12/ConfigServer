@@ -15,17 +15,37 @@ spring:
             - name: RewritePath
               args:
                 regexp: /capteurs/(?<segment>.*)
-                replacement: /${segment}
-
-        - id: Irrigation
-          uri: lb://IRRIGATION-SERVICE
+                replacement: /api/capteurs/${segment}
+                
+        - id: Mesures
+          uri: lb://CAPTEURS-SERVICE
           predicates:
-            - Path=/irrigation/**
+            - Path=/mesures/**
           filters:
             - name: RewritePath
               args:
-                regexp: /irrigation/(?<segment>.*)
-                replacement: /${segment}
+                regexp: /mesures/(?<segment>.*)
+                replacement: /api/mesures/${segment}
+
+        - id: Parcelles
+          uri: lb://IRRIGATION-SERVICE
+          predicates:
+            - Path=/parcelles/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /parcelles/(?<segment>.*)
+                replacement: /api/parcelles/${segment}
+
+        - id: Actions
+          uri: lb://IRRIGATION-SERVICE
+          predicates:
+            - Path=/actions/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /actions/(?<segment>.*)
+                replacement: /api/actions/${segment}
 
 eureka:
   client:
@@ -38,7 +58,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: gateway
   endpoint:
     gateway:
-      enabled: true
+      access: read-only
