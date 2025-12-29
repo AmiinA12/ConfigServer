@@ -8,25 +8,24 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: capteurs-service
-          uri: lb://capteurs-service
+        - id: Capteurs
+          uri: lb://CAPTEURS-SERVICE  # nom exact du service dans Eureka
           predicates:
-            - Path=/capteurs/**
+            - Path=/capteurs/**  
           filters:
-            - RewritePath=/capteurs/(?<path>.*), /${path}
-
-        - id: irrigation-service
-          uri: lb://irrigation-service
+            - RewritePath=/capteurs/(?<segment>.*), /${segment}
+        - id: Irrigation
+          uri: lb://IRRIGATION-SERVICE
           predicates:
-            - Path=/irrigation/**
+            - Path=/irrigation/**  
           filters:
-            - RewritePath=/irrigation/(?<path>.*), /${path}
+            - RewritePath=/irrigation/(?<segment>.*), /${segment}
 
 eureka:
   client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
       defaultZone: http://localhost:4040/eureka
 
 management:
@@ -34,3 +33,6 @@ management:
     web:
       exposure:
         include: gateway
+  endpoint:
+    gateway:
+      access: read-only
