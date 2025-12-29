@@ -4,49 +4,34 @@ server:
 spring:
   application:
     name: Gateway
+
   cloud:
     gateway:
       routes:
-        - id: Capteurs
+
+        # =========================
+        # CAPTEURS-SERVICE
+        # =========================
+        - id: CAPTEURS-SERVICE
           uri: lb://CAPTEURS-SERVICE
           predicates:
             - Path=/capteurs/**
           filters:
-            - name: RewritePath
-              args:
-                regexp: /capteurs/(?<segment>.*)
-                replacement: /api/capteurs/${segment}
-                
-        - id: Mesures
-          uri: lb://CAPTEURS-SERVICE
-          predicates:
-            - Path=/mesures/**
-          filters:
-            - name: RewritePath
-              args:
-                regexp: /mesures/(?<segment>.*)
-                replacement: /api/mesures/${segment}
+            - RewritePath=/capteurs/(?<segment>.*), /api/${segment}
 
-        - id: Parcelles
+        # =========================
+        # IRRIGATION-SERVICE
+        # =========================
+        - id: IRRIGATION-SERVICE
           uri: lb://IRRIGATION-SERVICE
           predicates:
-            - Path=/parcelles/**
+            - Path=/irrigation/**
           filters:
-            - name: RewritePath
-              args:
-                regexp: /parcelles/(?<segment>.*)
-                replacement: /api/parcelles/${segment}
+            - RewritePath=/irrigation/(?<segment>.*), /api/${segment}
 
-        - id: Actions
-          uri: lb://IRRIGATION-SERVICE
-          predicates:
-            - Path=/actions/**
-          filters:
-            - name: RewritePath
-              args:
-                regexp: /actions/(?<segment>.*)
-                replacement: /api/actions/${segment}
-
+# =========================
+# EUREKA
+# =========================
 eureka:
   client:
     registerWithEureka: true
@@ -54,6 +39,9 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:4040/eureka
 
+# =========================
+# MANAGEMENT
+# =========================
 management:
   endpoints:
     web:
