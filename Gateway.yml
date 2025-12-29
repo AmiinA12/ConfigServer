@@ -31,9 +31,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: gateway,health,info
+        include: "*"
   endpoint:
     gateway:
-      enabled: true
-    health:
       enabled: true
