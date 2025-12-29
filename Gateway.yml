@@ -1,15 +1,13 @@
 server:
   port: 5000
-
 spring:
   application:
     name: Gateway
-
   cloud:
     gateway:
       routes:
         - id: Capteurs
-          uri: lb://CAPTEURS-SERVICE  # nom exact du service dans Eureka
+          uri: lb://CAPTEURS-SERVICE
           predicates:
             - Path=/capteurs/**  
           filters:
@@ -20,20 +18,17 @@ spring:
             - Path=/irrigation/**  
           filters:
             - RewritePath=/irrigation/(?<segment>.*), /${segment}
-
 eureka:
   client:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://localhost:4040/eureka
-
 management:
   endpoints:
     web:
       exposure:
-        include:  health,info,gateway,refresh
-   endpoint:
+        include: health,info,gateway,refresh
+  endpoint:  # ✅ CORRECTION : 2 espaces d'indentation
     gateway:
       enabled: true
-      access: read-only
