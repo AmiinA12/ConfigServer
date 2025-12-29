@@ -1,6 +1,6 @@
 spring:
   application:
-    name: MSEurika
+    name: MsEureka
 
 server:
   port: 4040
