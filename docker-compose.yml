@@ -1,20 +1,114 @@
 services:
-  zookeeper:
-    image: zookeeper:3.8.1
-    container_name: zookeeper
+  # ==========================================
+  # INFRASTRUCTURE
+  # ==========================================
+  db-mysql:
+    image: mysql:8
+    container_name: db-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
     ports:
-      - "2181:2181"
+      - "3307:3306"
+    networks:
+      - irrigation-net
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - irrigation-net
 
   kafka:
-    image: bitnami/kafka:3.5.1
-    container_name: kafka
-    ports:
-      - "9092:9092"
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "29092:29092"
+    networks:
+      - irrigation-net
+
+  # ==========================================
+  # SERVICES SYSTÈME (SPRING CLOUD)
+  # ==========================================
+  discovery-service:
+    build: ./backend/MsEureka
+    container_name: discovery-service
+    ports:
+      - "4040:4040"
+    networks:
+      - irrigation-net
+
+  config-service:
+    build: ./backend/ConfigServer
+    container_name: config-service
+    ports:
+      - "9999:9999"
     depends_on:
-      - zookeeper
+      - discovery-service
+    networks:
+      - irrigation-net
+
+  # ==========================================
+  # MICROSERVICES MÉTIER
+  # ==========================================
+  capteurs-service:
+    build: ./backend/MicroserviceCapteurs
+    container_name: capteurs-service
+    depends_on:
+      - db-mysql
+      - kafka
+      - config-service
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-service:9999
+    networks:
+      - irrigation-net
+
+  irrigation-service:
+    build: ./backend/microservice_irrigation
+    container_name: irrigation-service
+    depends_on:
+      - db-mysql
+      - kafka
+      - config-service
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-service:9999
+    networks:
+      - irrigation-net
+
+  # ==========================================
+  # FRONTEND & GATEWAY
+  # ==========================================
+  gateway-service:
+    build: ./backend/Gateway
+    container_name: gateway-service
+    ports:
+      - "5000:5000"
+    depends_on:
+      - config-service
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-service:9999
+    networks:
+      - irrigation-net
+
+  frontend:
+    build: ./frontend_irrigation
+    container_name: frontend-irrigation
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway-service
+    networks:
+      - irrigation-net
+
+networks:
+  irrigation-net:
+    driver: bridge
