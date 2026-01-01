@@ -6,12 +6,14 @@ spring:
     name: irrigation-service
 
   config:
-    import: optional:configserver:http://localhost:9999
+    # Changé localhost -> config-service
+    import: optional:configserver:http://config-service:9999
 
   datasource:
-    url: jdbc:mysql://localhost:3306/irrigation?serverTimezone=UTC&createDatabaseIfNotExist=true
+    # Changé localhost -> db-mysql et password -> root
+    url: jdbc:mysql://db-mysql:3306/irrigation?serverTimezone=UTC&createDatabaseIfNotExist=true
     username: root
-    password:
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -25,7 +27,8 @@ spring:
       physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
   kafka:
-    bootstrap-servers: localhost:9092
+    # Changé localhost -> kafka
+    bootstrap-servers: kafka:9092
     consumer:
       group-id: irrigation-group
       auto-offset-reset: latest
@@ -39,7 +42,8 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:4040/eureka
+      # Changé localhost -> discovery-service
+      defaultZone: http://discovery-service:4040/eureka
 
 management:
   endpoints:
