@@ -6,10 +6,9 @@ spring:
     name: capteurs-service
 
   datasource:
-    # Changé localhost -> db-mysql et ajout du mot de passe 'root' défini dans Docker
-    url: jdbc:mysql://db-mysql:3306/capteurs?createDatabaseIfNotExist=true&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/capteurs?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
-    password: root
+    password: ""
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -21,8 +20,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
   kafka:
-    # Changé localhost -> kafka
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -32,11 +30,10 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      # Changé localhost -> discovery-service
-      defaultZone: http://discovery-service:4040/eureka
+      defaultZone: http://localhost:4040/eureka
 
 management:
   endpoints:
     web:
       exposure:
-        include: refresh 
+        include: refresh
