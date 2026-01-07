@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: Gateway
+    name: gateway
 
   cloud:
     gateway:
@@ -27,11 +27,10 @@ spring:
 # =========================
 eureka:
   client:
-    registerWithEureka: true
-    fetchRegistry: true
-    serviceUrl:
-      # Changé localhost -> discovery-service
-      defaultZone: http://discovery-service:4040/eureka
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:4040/eureka
 
 # =========================
 # MANAGEMENT
